@@ -1,0 +1,6 @@
+# vim swapfiles
+*.swp
+
+# ocamlbuild artifacts
+_build
+*.native
