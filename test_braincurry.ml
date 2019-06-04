@@ -8,15 +8,15 @@ let assert_parse parser input expected =
 let tests = "test suite for braincurry" >::: [
   "parseBinder 0" >::
     (fun _ ->
-      assert_parse parseBinder "" (Bind 0));
+      assert_parse parseBinder "_" (Bind 0));
 
   "parseBinder 1" >::
     (fun _ ->
-      assert_parse parseBinder "+" (Bind 1));
+      assert_parse parseBinder "_+" (Bind 1));
 
   "parseBinder 3" >::
     (fun _ ->
-      assert_parse parseBinder "+++" (Bind 3));
+      assert_parse parseBinder "_+++" (Bind 3));
 ]
 
 let _ = run_test_tt_main tests
