@@ -146,7 +146,7 @@ let foldHelper f x0 parser input =
         (f thisVal accVal, restOfInput)
   in iter input
 
-let fold f x0 parser =
+let foldP f x0 parser =
   let innerFn input =
     Success (foldHelper f x0 parser input)
   in Parser innerFn

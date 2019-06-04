@@ -17,6 +17,14 @@ let tests = "test suite for braincurry" >::: [
   "parseBinder 3" >::
     (fun _ ->
       assert_parse parseBinder "_+++" (Bind 3));
+
+  "parse io write" >::
+    (fun _ ->
+      assert_parse parseIO "." IOWrite);
+
+  "parse io read" >::
+    (fun _ ->
+      assert_parse parseIO "," IORead);
 ]
 
 let _ = run_test_tt_main tests
