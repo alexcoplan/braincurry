@@ -33,6 +33,12 @@ let tests = "test suite for braincurry" >::: [
   "parse app" >::
     (fun _ ->
       assert_parse parseBC "@__" (App (Bind 0, Bind 0)));
+
+  "parse 'cat'" >::
+    (fun _ ->
+      assert_parse parseBC "@@>,/@._"
+        (App (App (IOBind, IORead),
+              Abs (App (IOWrite, (Bind 0))))))
 ]
 
 let _ = run_test_tt_main tests

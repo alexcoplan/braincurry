@@ -11,6 +11,7 @@ open Parsley
 type ast =
   | IOWrite
   | IORead
+  | IOBind
   | Bind of int
   | Abs of ast
   | App of ast * ast
@@ -29,19 +30,20 @@ let parseIO =
   let ioOfChar = function
     | '.' -> IOWrite
     | ',' -> IORead
+    | '>' -> IOBind
     | _ -> assert false
   in
-  Parsley.orElse (Parsley.pchar '.') (Parsley.pchar ',') |>
+  (pchar '.') <|> (pchar ',') <|> (pchar '>') |>
   Parsley.mapP ioOfChar
 
 let rec parseBC =
   let parseAbs input =
-    let p = ((pchar '/') >.~> parseBC) |> mapP (fun x -> Abs x)
+    let p = (pchar '/') >.~> parseBC |> mapP (fun x -> Abs x)
     in run p input
   in let pAbs = Parser parseAbs
   in let parseApp input =
     let p =
-      ((pchar '@') >.~> (parseBC >~~> parseBC)) |>
+      (pchar '@') >.~> (parseBC >~~> parseBC) |>
       mapP (fun (x,y) -> App (x,y))
     in run p input
   in let pApp = Parser parseApp
