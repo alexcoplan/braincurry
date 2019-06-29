@@ -56,7 +56,7 @@ let andThen p1 p2 =
       | Success (v2, rem2) -> Success ((v1,v2),rem2)
   in Parser inner;;
 
-let (>.>) = andThen
+let (>~~>) = andThen
 
 let orElse p1 p2 =
   let inner input =
@@ -66,6 +66,11 @@ let orElse p1 p2 =
   in Parser inner;;
 
 let (<|>) = orElse
+
+let choice parserList =
+  match parserList with
+  | [] -> invalid_arg "need at least one parser"
+  | (x::xs) -> List.fold_left (<|>) x xs
 
 (* N.B.
  *
@@ -88,6 +93,15 @@ let mapP f p =
 
 let (<!>) = mapP
 
+let dropLeft p1 p2 =
+  (p1 >~~> p2) |> mapP (fun (_,x) -> x)
+
+let dropRight p1 p2 =
+  (p1 >~~> p2) |> mapP (fun (x,_) -> x)
+
+let (>.~>) = dropLeft
+let (>~.>) = dropRight
+
 (* return: just lift a value into parser world *)
 let returnP x =
   let f input = Success (x, input)
@@ -97,7 +111,7 @@ let returnP x =
  *
  * here we are just using mapP to reach inside the parser *)
 let applyP fP xP =
-  (fP >.> xP) |> mapP (fun (f,x) -> f x)
+  (fP >~~> xP) |> mapP (fun (f,x) -> f x)
 
 let (<*>) = applyP
 

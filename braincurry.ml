@@ -6,6 +6,8 @@
  * builtin io: . ,
  *)
 
+open Parsley
+
 type ast =
   | IOWrite
   | IORead
@@ -31,3 +33,18 @@ let parseIO =
   in
   Parsley.orElse (Parsley.pchar '.') (Parsley.pchar ',') |>
   Parsley.mapP ioOfChar
+
+let rec parseBC =
+  let parseAbs input =
+    let p = ((pchar '/') >.~> parseBC) |> mapP (fun x -> Abs x)
+    in run p input
+  in let pAbs = Parser parseAbs
+  in let parseApp input =
+    let p =
+      ((pchar '@') >.~> (parseBC >~~> parseBC)) |>
+      mapP (fun (x,y) -> App (x,y))
+    in run p input
+  in let pApp = Parser parseApp
+  in let theParser input =
+   run (pApp <|> pAbs <|> parseIO <|> parseBinder) input
+  in Parser theParser
